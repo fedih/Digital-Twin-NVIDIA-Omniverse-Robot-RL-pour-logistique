@@ -110,5 +110,4 @@ graph TB
     style Telemetry fill:#7c3aed,stroke:#5b21b6,stroke-width:2px,color:#fff
 ```
 
-> **À COMPLÉTER** : remplacer le diagramme par un diagramme détaillé PlantUML ou PNG exporté, inclure les schémas réseau (ports, protocoles), schéma des topics MQTT / entités NGSI-LD, et la structure des messages (ex. JSON Schema).
 
