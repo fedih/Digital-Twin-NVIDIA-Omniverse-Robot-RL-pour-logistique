@@ -56,7 +56,7 @@ Le présent dépôt sert de blueprint professionnel : il documente les cas d’u
 
 ---
 
-## Valeur commerciale et KPIs
+## Valeur commerciale
 
 **Valeur** : réduction du coût par commande, baisse des erreurs de prélèvement, amélioration du débit, réduction du temps d’intégration.
 
