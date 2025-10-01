@@ -1,91 +1,93 @@
-# Digital-Twin-NVIDIA-Omniverse-Robot-RL-pour-logistique
+Digital-Twin-NVIDIA-Omniverse-Robot-RL-for-Logistics
 
-Ce projet vise à concevoir une plateforme intégrée pour entraîner, valider et préparer le déploiement de robots mobiles équipés de bras manipulateurs (pick & place) en combinant :
+This project aims to design an integrated platform to train, validate, and prepare the deployment of mobile robots equipped with manipulator arms (pick & place) by combining:
 
-* un **Digital Twin / context broker** pour refléter l’état réel de l’entrepôt ;
-* **NVIDIA Omniverse + Isaac Sim** pour la simulation physique et visuelle de haute fidélité ;
-* des **agents Reinforcement Learning (RL)** entraînés à partir de prompts (instructions textuelles transformées en objectifs opérationnels).
+a Digital Twin / context broker to reflect the real-time state of the warehouse;
 
-Le présent dépôt sert de blueprint professionnel : il documente les cas d’usage, l’intérêt commercial, l’architecture cible et la feuille de route pour implémenter un prototype reproductible.
+NVIDIA Omniverse + Isaac Sim for high-fidelity physics and visual simulation;
 
----
+Reinforcement Learning (RL) agents trained from prompts (text instructions translated into operational goals).
 
-## Contexte et objectifs
+This repository serves as a professional blueprint: it documents the use cases, business value, target architecture, and roadmap for implementing a reproducible prototype.
 
-**Contexte** : la logistique actuelle recherche des solutions pour automatiser la préparation de commandes, réduire les erreurs, et augmenter la résilience opérationnelle sans risque matériel. La combinaison simulation haute-fidélité + digital twin accélère le développement et réduit le coût du sim2real.
+Context & Objectives
 
-**Objectifs** :
+Context: Modern logistics is actively seeking solutions to automate order fulfillment, reduce errors, and improve operational resilience without hardware risks. The combination of high-fidelity simulation + digital twin accelerates development and reduces sim2real costs.
 
-* Démontrer un pipeline d’entraînement RL reproductible dans Isaac Sim pour des tâches pick & place.
-* Fournir une intégration de preuve de concept entre context broker et simulation.
-* Documenter les pratiques de transfert sim2real (domain randomization, calibration, fine-tuning).
+Objectives:
 
----
+Demonstrate a reproducible RL training pipeline in Isaac Sim for pick & place tasks.
 
-## Portée du projet
+Provide a proof-of-concept integration between a context broker and the simulation.
 
-**Inclus** :
+Document best practices for sim2real transfer (domain randomization, calibration, fine-tuning).
 
-* Scène Omniverse minimale (entrepôt, rack, robot mobile + bras).
-* Environnement Gym-like pour entraînement RL (wrapper Isaac Sim).
-* Agent RL baseline (PPO ou SAC) et scripts d’entraînement/évaluation.
-* Module perceptif simple (détection d’étiquettes, segmentation) pour la tâche pick.
-* Mock du Digital Twin (MQTT / NGSI-LD) pour injecter états d’inventaire.
+Project Scope
 
-**Exclus (phase ultérieure)** :
+Included:
 
-* Intégration matérielle complète (drivers propriétaires), certifications, et déploiement industriel à grande échelle.
+Minimal Omniverse scene (warehouse, rack, mobile robot + manipulator).
 
----
+Gym-like RL environment (Isaac Sim wrapper).
 
-## Cas d'usage prioritaires
+Baseline RL agent (PPO or SAC) and training/evaluation scripts.
 
-### Cas principal — Pick & Place pour préparation de commandes
+Simple perception module (label detection, segmentation) for pick task.
 
-* **Description** : localiser un carton identifié, le saisir et le déposer en zone de collecte.
-* **Prompt exemple** : *"Prendre SKU-12345 dans l'allée A et déposer en zone B3"*.
-* **Contraintes** : obstacles dynamiques, variations d’éclairage, alignement des pièces, fragilité.
+Mock Digital Twin (MQTT / NGSI-LD) to inject inventory states.
 
-### Cas secondaire — Transport d’échantillons en environnements sensibles
+Excluded (future phase):
 
-* Hôpitaux, laboratoires : contraintes de sécurité, traçabilité et isolement des flux.
+Full hardware integration (proprietary drivers), certifications, and industrial-scale deployment.
 
-### Cas tertiaire — Inspection & maintenance assistée
+Priority Use Cases
+Main Case — Pick & Place for Order Fulfillment
 
-* Robot patrouilleur capable d’exécuter prompts d’inspection (caméras thermiques, LiDAR).
+Description: locate an identified box, pick it up, and place it in a collection area.
 
----
+Example prompt: "Pick SKU-12345 in aisle A and drop it in zone B3."
 
-## Valeur commerciale
+Constraints: dynamic obstacles, lighting variations, alignment of items, fragility.
 
-**Valeur** : réduction du coût par commande, baisse des erreurs de prélèvement, amélioration du débit, réduction du temps d’intégration.
+Secondary Case — Sample Transport in Sensitive Environments
 
+Hospitals, laboratories: safety, traceability, and flow isolation constraints.
 
----
+Tertiary Case — Inspection & Assisted Maintenance
 
-## Architecture technique (structure & espace à compléter)
+Patrolling robot executing inspection prompts (thermal cameras, LiDAR).
 
-> **Objectif de cette section** : fournir un schéma clair des composants, des flux de données et des API. Laisser un espace pour insérer diagrammes Mermaid / PlantUML et la spécification détaillée des endpoints.
+Business Value
 
-### Vue d'ensemble (conceptuelle)
+Value: lower cost per order, reduced picking errors, improved throughput, and shorter integration times.
 
-1. **Digital Twin / Context Broker**
+Technical Architecture (structure & placeholder)
 
-   * Ingestion des états (capteurs IoT, inventaire, événements opérationnels).
-2. **Noyau de simulation**
+Goal of this section: provide a clear schema of components, data flows, and APIs. Leave placeholders for Mermaid / PlantUML diagrams and detailed endpoint specifications.
 
-   * NVIDIA Omniverse + Isaac Sim : scènes, assets, moteurs physiques, capteurs virtuels.
-3. **Module RL**
+Conceptual Overview
 
-   * Environnement Gym-like, agentes, algorithmes d’entraînement distribués.
-4. **Perception**
+Digital Twin / Context Broker
 
-   * Pipelines de vision (extraction d’étiquettes, détection de boîtes, estimation de pose).
-5. **Orchestration & Monitoring**
+Ingests states (IoT sensors, inventory, operational events).
 
-   * Stockage des logs, visualisation (Weights & Biases), pipelines CI/CD pour modèles.
+Simulation Core
 
-### Diagramme (placeholder Mermaid)
+NVIDIA Omniverse + Isaac Sim: scenes, assets, physics engines, virtual sensors.
+
+RL Module
+
+Gym-like environment, agents, distributed training algorithms.
+
+Perception
+
+Vision pipelines (label extraction, box detection, pose estimation).
+
+Orchestration & Monitoring
+
+Log storage, visualization (Weights & Biases), CI/CD pipelines for models.
+
+Diagram (Mermaid placeholder)
 
 ```mermaid
 graph TB
