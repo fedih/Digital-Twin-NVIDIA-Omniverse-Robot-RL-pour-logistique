@@ -1,0 +1,67 @@
+{
+  "@context": [
+    "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld",
+    {
+      "Robot": "https://example.org/digitaltwin/Robot",
+      "position": "https://example.org/digitaltwin/position",
+      "velocity": "https://example.org/digitaltwin/velocity",
+      "orientation": "https://example.org/digitaltwin/orientation",
+      "status": "https://example.org/digitaltwin/status",
+      "battery": "https://example.org/digitaltwin/battery",
+      "sensorData": "https://example.org/digitaltwin/sensorData"
+    }
+  ],
+  "id": "urn:ngsi-ld:Robot:001",
+  "type": "Robot",
+  "name": {
+    "type": "Property",
+    "value": "Isaac Sim Robot"
+  },
+  "position": {
+    "type": "GeoProperty",
+    "value": {
+      "type": "Point",
+      "coordinates": [0.0, 0.0, 0.0]
+    }
+  },
+  "velocity": {
+    "type": "Property",
+    "value": {
+      "x": 0.0,
+      "y": 0.0,
+      "z": 0.0
+    },
+    "unitCode": "MTS"
+  },
+  "orientation": {
+    "type": "Property",
+    "value": {
+      "x": 0.0,
+      "y": 0.0,
+      "z": 0.0,
+      "w": 1.0
+    }
+  },
+  "status": {
+    "type": "Property",
+    "value": "idle",
+    "observedAt": "2025-11-24T00:00:00Z"
+  },
+  "battery": {
+    "type": "Property",
+    "value": 100.0,
+    "unitCode": "P1",
+    "observedAt": "2025-11-24T00:00:00Z"
+  },
+  "sensorData": {
+    "type": "Property",
+    "value": {
+      "lidar": [],
+      "camera": {},
+      "imu": {
+        "acceleration": {"x": 0, "y": 0, "z": 9.81},
+        "gyroscope": {"x": 0, "y": 0, "z": 0}
+      }
+    }
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "@context": [
+    "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld",
+    {
+      "Episode": "https://example.org/digitaltwin/Episode",
+      "episodeNumber": "https://example.org/digitaltwin/episodeNumber",
+      "reward": "https://example.org/digitaltwin/reward",
+      "steps": "https://example.org/digitaltwin/steps",
+      "metrics": "https://example.org/digitaltwin/metrics"
+    }
+  ],
+  "id": "urn:ngsi-ld:Episode:001",
+  "type": "Episode",
+  "episodeNumber": {
+    "type": "Property",
+    "value": 1
+  },
+  "reward": {
+    "type": "Property",
+    "value": 0.0
+  },
+  "steps": {
+    "type": "Property",
+    "value": 0
+  },
+  "status": {
+    "type": "Property",
+    "value": "running",
+    "observedAt": "2025-11-24T00:00:00Z"
+  },
+  "startTime": {
+    "type": "Property",
+    "value": {
+      "@type": "DateTime",
+      "@value": "2025-11-24T00:00:00Z"
+    }
+  },
+  "metrics": {
+    "type": "Property",
+    "value": {
+      "totalReward": 0.0,
+      "averageReward": 0.0,
+      "successRate": 0.0,
+      "collisions": 0,
+      "distance": 0.0
+    }
+  }
+}

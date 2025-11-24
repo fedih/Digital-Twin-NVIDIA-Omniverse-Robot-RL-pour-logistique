@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Twin Monitoring Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            padding: 20px;
+        }
+
+        .dashboard {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 20px 30px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            color: #667eea;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .status-indicators {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .status-badge {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+
+        .status-online {
+            background: #10b981;
+            color: white;
+        }
+
+        .status-offline {
+            background: #ef4444;
+            color: white;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .card h2 {
+            color: #667eea;
+            font-size: 1.3em;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .metric:last-child {
+            border-bottom: none;
+        }
+
+        .metric-label {
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        .metric-value {
+            font-size: 1.2em;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .battery {
+            width: 100%;
+            height: 30px;
+            background: #e5e7eb;
+            border-radius: 5px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .battery-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981 0%, #34d399 100%);
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .battery-low {
+            background: linear-gradient(90deg, #ef4444 0%, #f87171 100%);
+        }
+
+        .position-3d {
+            background: #f3f4f6;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .sensor-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .sensor-item {
+            background: #f9fafb;
+            padding: 10px;
+            border-radius: 5px;
+            border-left: 3px solid #667eea;
+        }
+
+        .sensor-item strong {
+            color: #667eea;
+        }
+
+        .chart-container {
+            grid-column: 1 / -1;
+            height: 300px;
+        }
+
+        #telemetryChart {
+            width: 100%;
+            height: 100%;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #6b7280;
+        }
+
+        .refresh-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+
+        .refresh-btn:hover {
+            background: #5568d3;
+        }
+
+        .timestamp {
+            color: #9ca3af;
+            font-size: 0.85em;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <div class="header">
+            <h1>🤖 Digital Twin Monitoring Dashboard</h1>
+            <p>Real-time monitoring of robot simulation and training</p>
+            <div class="status-indicators">
+                <span id="orionStatus" class="status-badge status-offline">Orion: Offline</span>
+                <span id="telemetryStatus" class="status-badge status-offline">Telemetry: Offline</span>
+                <button class="refresh-btn" onclick="refreshData()">🔄 Refresh</button>
+            </div>
+        </div>
+
+        <div class="grid">
+            <!-- Robot Status Card -->
+            <div class="card">
+                <h2>🤖 Robot Status</h2>
+                <div class="metric">
+                    <span class="metric-label">Status</span>
+                    <span class="metric-value" id="robotStatus">-</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Name</span>
+                    <span class="metric-value" id="robotName">-</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Battery</span>
+                </div>
+                <div class="battery">
+                    <div class="battery-fill" id="batteryFill" style="width: 0%">0%</div>
+                </div>
+                <div class="timestamp" id="robotTimestamp">Last updated: -</div>
+            </div>
+
+            <!-- Position Card -->
+            <div class="card">
+                <h2>📍 Position & Velocity</h2>
+                <div class="metric">
+                    <span class="metric-label">Position (X, Y, Z)</span>
+                </div>
+                <div class="position-3d" id="robotPosition">
+                    X: 0.00<br>
+                    Y: 0.00<br>
+                    Z: 0.00
+                </div>
+                <div class="metric" style="margin-top: 15px">
+                    <span class="metric-label">Velocity (m/s)</span>
+                </div>
+                <div class="position-3d" id="robotVelocity">
+                    vX: 0.00<br>
+                    vY: 0.00<br>
+                    vZ: 0.00
+                </div>
+            </div>
+
+            <!-- Sensors Card -->
+            <div class="card">
+                <h2>📡 Sensor Data</h2>
+                <div class="sensor-grid">
+                    <div class="sensor-item">
+                        <strong>IMU Accel</strong><br>
+                        <span id="imuAccel">-</span>
+                    </div>
+                    <div class="sensor-item">
+                        <strong>IMU Gyro</strong><br>
+                        <span id="imuGyro">-</span>
+                    </div>
+                    <div class="sensor-item">
+                        <strong>Lidar Points</strong><br>
+                        <span id="lidarPoints">-</span>
+                    </div>
+                    <div class="sensor-item">
+                        <strong>Camera</strong><br>
+                        <span id="cameraStatus">-</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Episode Card -->
+            <div class="card">
+                <h2>🎯 Training Episode</h2>
+                <div class="metric">
+                    <span class="metric-label">Episode #</span>
+                    <span class="metric-value" id="episodeNumber">-</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Total Reward</span>
+                    <span class="metric-value" id="episodeReward">-</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Steps</span>
+                    <span class="metric-value" id="episodeSteps">-</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Status</span>
+                    <span class="metric-value" id="episodeStatus">-</span>
+                </div>
+            </div>
+
+            <!-- Environment Card -->
+            <div class="card">
+                <h2>🌍 Environment</h2>
+                <div class="metric">
+                    <span class="metric-label">Temperature</span>
+                    <span class="metric-value" id="envTemp">-</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Lighting</span>
+                    <span class="metric-value" id="envLighting">-</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Dimensions</span>
+                    <span class="metric-value" id="envDimensions">-</span>
+                </div>
+            </div>
+
+            <!-- Telemetry History -->
+            <div class="card chart-container">
+                <h2>📊 Battery History</h2>
+                <canvas id="telemetryChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script>
+        const ORION_URL = 'http://localhost:1026';
+        const TELEMETRY_URL = 'http://localhost:8668';
+
+        let batteryChart = null;
+
+        async function checkServices() {
+            try {
+                const orionRes = await fetch(`${ORION_URL}/version`);
+                document.getElementById('orionStatus').className = 'status-badge status-online';
+                document.getElementById('orionStatus').textContent = 'Orion: Online';
+            } catch {
+                document.getElementById('orionStatus').className = 'status-badge status-offline';
+            }
+
+            try {
+                const telemetryRes = await fetch(`${TELEMETRY_URL}/health`);
+                document.getElementById('telemetryStatus').className = 'status-badge status-online';
+                document.getElementById('telemetryStatus').textContent = 'Telemetry: Online';
+            } catch {
+                document.getElementById('telemetryStatus').className = 'status-badge status-offline';
+            }
+        }
+
+        async function fetchRobotData() {
+            try {
+                const response = await fetch(`${ORION_URL}/ngsi-ld/v1/entities/urn:ngsi-ld:Robot:001`, {
+                    headers: { 'Accept': 'application/ld+json' }
+                });
+                const data = await response.json();
+
+                document.getElementById('robotName').textContent = data.name?.value || 'Unknown';
+                document.getElementById('robotStatus').textContent = data.status?.value || 'Unknown';
+
+                const battery = data['https://example.org/digitaltwin/battery']?.value || 0;
+                const batteryFill = document.getElementById('batteryFill');
+                batteryFill.style.width = battery + '%';
+                batteryFill.textContent = battery + '%';
+                batteryFill.className = battery < 20 ? 'battery-fill battery-low' : 'battery-fill';
+
+                const position = data['https://example.org/digitaltwin/position']?.value?.coordinates || [0, 0, 0];
+                document.getElementById('robotPosition').innerHTML = 
+                    `X: ${position[0].toFixed(2)}<br>Y: ${position[1].toFixed(2)}<br>Z: ${position[2].toFixed(2)}`;
+
+                const velocity = data['https://example.org/digitaltwin/velocity']?.value || {x:0, y:0, z:0};
+                document.getElementById('robotVelocity').innerHTML = 
+                    `vX: ${velocity.x.toFixed(2)}<br>vY: ${velocity.y.toFixed(2)}<br>vZ: ${velocity.z.toFixed(2)}`;
+
+                const sensorData = data['https://example.org/digitaltwin/sensorData']?.value || {};
+                if (sensorData.imu) {
+                    document.getElementById('imuAccel').textContent = 
+                        `x:${sensorData.imu.acceleration.x} y:${sensorData.imu.acceleration.y} z:${sensorData.imu.acceleration.z}`;
+                    document.getElementById('imuGyro').textContent = 
+                        `x:${sensorData.imu.gyroscope.x} y:${sensorData.imu.gyroscope.y} z:${sensorData.imu.gyroscope.z}`;
+                }
+                document.getElementById('lidarPoints').textContent = sensorData.lidar?.length || 0;
+                document.getElementById('cameraStatus').textContent = sensorData.camera ? 'Active' : 'Inactive';
+
+                document.getElementById('robotTimestamp').textContent = 
+                    'Last updated: ' + new Date().toLocaleTimeString();
+            } catch (error) {
+                console.error('Error fetching robot data:', error);
+            }
+        }
+
+        async function fetchEpisodeData() {
+            try {
+                const response = await fetch(`${ORION_URL}/ngsi-ld/v1/entities/urn:ngsi-ld:Episode:001`, {
+                    headers: { 'Accept': 'application/ld+json' }
+                });
+                const data = await response.json();
+
+                document.getElementById('episodeNumber').textContent = data.episodeNumber?.value || '-';
+                document.getElementById('episodeReward').textContent = data.reward?.value?.toFixed(2) || '0';
+                document.getElementById('episodeSteps').textContent = data.steps?.value || '0';
+                document.getElementById('episodeStatus').textContent = data.status?.value || 'Unknown';
+            } catch (error) {
+                console.error('Error fetching episode data:', error);
+            }
+        }
+
+        async function fetchEnvironmentData() {
+            try {
+                const response = await fetch(`${ORION_URL}/ngsi-ld/v1/entities/urn:ngsi-ld:Environment:001`, {
+                    headers: { 'Accept': 'application/ld+json' }
+                });
+                const data = await response.json();
+
+                const temp = data['https://example.org/digitaltwin/temperature']?.value || '-';
+                document.getElementById('envTemp').textContent = temp + (typeof temp === 'number' ? '°C' : '');
+
+                const lighting = data['https://example.org/digitaltwin/lighting']?.value;
+                document.getElementById('envLighting').textContent = lighting ? 
+                    `Intensity: ${lighting.intensity}` : '-';
+
+                const dims = data.dimensions?.value;
+                document.getElementById('envDimensions').textContent = dims ? 
+                    `${dims.width}x${dims.depth}x${dims.height}m` : '-';
+            } catch (error) {
+                console.error('Error fetching environment data:', error);
+            }
+        }
+
+        async function fetchTelemetryHistory() {
+            try {
+                const response = await fetch(`${TELEMETRY_URL}/v2/entities/TestRobot?lastN=20`);
+                const data = await response.json();
+
+                const batteryData = data.data.filter(item => item.attribute === 'battery');
+                const labels = batteryData.map(item => new Date(item.time).toLocaleTimeString()).reverse();
+                const values = batteryData.map(item => item.value).reverse();
+
+                if (batteryChart) {
+                    batteryChart.destroy();
+                }
+
+                const ctx = document.getElementById('telemetryChart').getContext('2d');
+                batteryChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Battery Level (%)',
+                            data: values,
+                            borderColor: '#667eea',
+                            backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'top'
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 100,
+                                ticks: {
+                                    callback: function(value) {
+                                        return value + '%';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error('Error fetching telemetry history:', error);
+            }
+        }
+
+        async function refreshData() {
+            await checkServices();
+            await fetchRobotData();
+            await fetchEpisodeData();
+            await fetchEnvironmentData();
+            await fetchTelemetryHistory();
+        }
+
+        // Initial load
+        refreshData();
+
+        // Auto-refresh every 5 seconds
+        setInterval(refreshData, 5000);
+    </script>
+</body>
+</html>

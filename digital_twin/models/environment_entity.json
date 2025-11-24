@@ -1,0 +1,44 @@
+{
+  "@context": [
+    "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld",
+    {
+      "Environment": "https://example.org/digitaltwin/Environment",
+      "temperature": "https://example.org/digitaltwin/temperature",
+      "lighting": "https://example.org/digitaltwin/lighting",
+      "obstacles": "https://example.org/digitaltwin/obstacles"
+    }
+  ],
+  "id": "urn:ngsi-ld:Environment:001",
+  "type": "Environment",
+  "name": {
+    "type": "Property",
+    "value": "Isaac Sim Environment"
+  },
+  "temperature": {
+    "type": "Property",
+    "value": 22.0,
+    "unitCode": "CEL",
+    "observedAt": "2025-11-24T00:00:00Z"
+  },
+  "lighting": {
+    "type": "Property",
+    "value": {
+      "intensity": 1.0,
+      "color": {"r": 255, "g": 255, "b": 255},
+      "type": "ambient"
+    }
+  },
+  "obstacles": {
+    "type": "Property",
+    "value": []
+  },
+  "dimensions": {
+    "type": "Property",
+    "value": {
+      "width": 10.0,
+      "height": 3.0,
+      "depth": 10.0
+    },
+    "unitCode": "MTR"
+  }
+}

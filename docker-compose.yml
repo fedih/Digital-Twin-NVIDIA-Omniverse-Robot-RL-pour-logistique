@@ -1,0 +1,100 @@
+version: "3.8"
+
+services:
+  # MongoDB database for Orion Context Broker
+  mongo-db:
+    image: mongo:4.4
+    container_name: fiware-mongo
+    hostname: mongo-db
+    ports:
+      - "27017:27017"
+    networks:
+      - fiware-network
+    volumes:
+      - mongo-db:/data/db
+      - mongo-config:/data/configdb
+    command: --bind_ip_all
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mongo", "--quiet", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Orion Context Broker (NGSI-LD)
+  orion:
+    image: fiware/orion-ld:1.5.1
+    container_name: fiware-orion
+    hostname: orion
+    depends_on:
+      mongo-db:
+        condition: service_healthy
+    ports:
+      - "1026:1026"
+    networks:
+      - fiware-network
+    restart: unless-stopped
+    command: -dbhost mongo-db -logLevel DEBUG
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:1026/version"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # TimescaleDB for Telemetry Store
+  timescaledb:
+    image: timescale/timescaledb:latest-pg15
+    container_name: telemetry-timescaledb
+    hostname: timescaledb
+    ports:
+      - "5432:5432"
+    networks:
+      - fiware-network
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=telemetry
+    volumes:
+      - timescale-db:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # QuantumLeap for Historical Data
+  quantumleap:
+    image: orchestracities/quantumleap:latest
+    container_name: fiware-quantumleap
+    hostname: quantumleap
+    depends_on:
+      timescaledb:
+        condition: service_healthy
+      orion:
+        condition: service_healthy
+    ports:
+      - "8668:8668"
+    networks:
+      - fiware-network
+    environment:
+      - QL_DEFAULT_DB=timescale
+      - POSTGRES_HOST=timescaledb
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB_NAME=telemetry
+      - POSTGRES_DB_USER=postgres
+      - POSTGRES_DB_PASS=postgres
+      - POSTGRES_USE_SSL=false
+      - USE_GEOCODING=false
+      - LOGLEVEL=INFO
+    restart: unless-stopped
+
+networks:
+  fiware-network:
+    driver: bridge
+
+volumes:
+  mongo-db:
+  mongo-config:
+  timescale-db:
