@@ -5,11 +5,13 @@ Subscribes to Context Broker notifications and stores them in TimescaleDB
 
 import psycopg2
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 from datetime import datetime
 import json
 import os
 
 app = Flask(__name__)
+CORS(app)  # Enable CORS for all routes
 
 # Database configuration from environment variables
 DB_CONFIG = {

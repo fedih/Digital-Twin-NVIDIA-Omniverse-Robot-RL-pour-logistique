@@ -34,7 +34,7 @@ services:
     networks:
       - fiware-network
     restart: unless-stopped
-    command: -dbhost mongo-db -logLevel DEBUG
+    command: -dbhost mongo-db -logLevel DEBUG -corsOrigin __ALL
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:1026/version"]
       interval: 30s
