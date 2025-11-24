@@ -64,11 +64,13 @@ services:
       timeout: 5s
       retries: 5
 
-  # QuantumLeap for Historical Data
-  quantumleap:
-    image: orchestracities/quantumleap:latest
-    container_name: fiware-quantumleap
-    hostname: quantumleap
+  # Custom Telemetry Service
+  telemetry-service:
+    build:
+      context: ./telemetry_store
+      dockerfile: Dockerfile
+    container_name: telemetry-service
+    hostname: telemetry-service
     depends_on:
       timescaledb:
         condition: service_healthy
@@ -79,15 +81,11 @@ services:
     networks:
       - fiware-network
     environment:
-      - QL_DEFAULT_DB=timescale
-      - POSTGRES_HOST=timescaledb
-      - POSTGRES_PORT=5432
-      - POSTGRES_DB_NAME=telemetry
-      - POSTGRES_DB_USER=postgres
-      - POSTGRES_DB_PASS=postgres
-      - POSTGRES_USE_SSL=false
-      - USE_GEOCODING=false
-      - LOGLEVEL=INFO
+      - DB_HOST=timescaledb
+      - DB_PORT=5432
+      - DB_NAME=telemetry
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
     restart: unless-stopped
 
 networks:

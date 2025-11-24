@@ -30,13 +30,15 @@ class TelemetryClient:
             "Fiware-ServicePath": "/"
         }
     
-    def create_subscription(self, entity_type: str, watched_attributes: List[str]) -> bool:
+    def create_subscription(self, entity_type: str, watched_attributes: List[str], 
+                           notification_url: str = "http://telemetry-service:8668/v2/notify") -> bool:
         """
-        Create a subscription in Orion to notify QuantumLeap of entity changes
+        Create a subscription in Orion to notify Telemetry Service of entity changes
         
         Args:
             entity_type: Type of entity to watch
             watched_attributes: List of attributes to monitor
+            notification_url: URL where notifications should be sent (default: telemetry-service in Docker network)
             
         Returns:
             True if successful, False otherwise
@@ -51,7 +53,7 @@ class TelemetryClient:
             },
             "notification": {
                 "http": {
-                    "url": f"{self.quantumleap_url}/v2/notify"
+                    "url": notification_url
                 },
                 "attrs": watched_attributes,
                 "metadata": ["dateCreated", "dateModified"]
