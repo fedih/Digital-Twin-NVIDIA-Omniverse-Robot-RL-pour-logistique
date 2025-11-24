@@ -106,18 +106,76 @@ robots = client.list_entities(entity_type="Robot")
 
 ## Integration Points
 
-- **Isaac Sim**: Publishes state updates (position, velocity, sensors) to the Context Broker
-- **RL Policy**: Reads current state and publishes actions
+- **Isaac Sim** (Future): Will publish state updates (position, velocity, sensors) to the Context Broker
+- **RL Policy** (Future): Will read current state and publish actions back to Context Broker
 - **Telemetry Store**: Subscribes to entity changes for historical storage
-- **Monitoring Dashboard**: Displays real-time entity states
+- **Monitoring Dashboard**: Displays real-time entity states via Context Broker API
 
 ## NGSI-LD Context
 
-The entities use a custom JSON-LD context alongside the standard NGSI-LD core context. This allows semantic interoperability and standardized data representation.
+The entities use a custom JSON-LD context alongside the standard NGSI-LD core context:
+
+```json
+{
+  "@context": [
+    "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld",
+    {
+      "Robot": "https://example.org/digitaltwin/Robot",
+      "position": "https://example.org/digitaltwin/position",
+      "velocity": "https://example.org/digitaltwin/velocity",
+      ...
+    }
+  ]
+}
+```
+
+This allows:
+
+- **Semantic interoperability**: Standard vocabulary for data exchange
+- **Type safety**: Well-defined property types
+- **Extensibility**: Easy to add custom properties
+
+## Testing
+
+Verify entities are working:
+
+```powershell
+# 1. Create entities
+python digital_twin_client.py
+
+# 2. List all robots
+curl -X GET http://localhost:1026/ngsi-ld/v1/entities?type=Robot `
+  -H "Accept: application/ld+json"
+
+# 3. Get specific entity
+curl http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Robot:001 `
+  -H "Accept: application/ld+json"
+
+# 4. Update position manually
+curl -X PATCH http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Robot:001/attrs `
+  -H "Content-Type: application/json" `
+  -d '{
+    "position": {
+      "type": "GeoProperty",
+      "value": {
+        "type": "Point",
+        "coordinates": [2.5, 3.0, 0.5]
+      }
+    },
+    "@context": "https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context.jsonld"
+  }'
+```
 
 ## Next Steps
 
-1. Integrate with Isaac Sim to publish real robot states
-2. Connect RL policy to read states and publish actions
-3. Set up subscriptions for real-time monitoring
-4. Implement telemetry persistence
+1. ✅ **Context Broker Setup** - Complete
+2. ✅ **Entity Models** - Complete
+3. ✅ **Python Client** - Complete
+4. ⏳ **Isaac Sim Integration** - Pending
+   - Connect Omniverse to Context Broker
+   - Publish robot state updates from simulation
+   - Subscribe to action commands
+5. ⏳ **RL Policy Integration** - Pending
+   - Read states from Context Broker
+   - Compute actions using trained model
+   - Publish actions back to simulation
