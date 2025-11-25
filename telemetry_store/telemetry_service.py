@@ -1,7 +1,4 @@
-"""
-Simple Telemetry Store Service
-Subscribes to Context Broker notifications and stores them in TimescaleDB
-"""
+
 
 import psycopg2
 from flask import Flask, request, jsonify
@@ -11,9 +8,8 @@ import json
 import os
 
 app = Flask(__name__)
-CORS(app)  # Enable CORS for all routes
+CORS(app)
 
-# Database configuration from environment variables
 DB_CONFIG = {
     "host": os.getenv("DB_HOST", "localhost"),
     "port": int(os.getenv("DB_PORT", "5432")),
@@ -24,16 +20,13 @@ DB_CONFIG = {
 
 
 def get_db_connection():
-    """Create database connection"""
     return psycopg2.connect(**DB_CONFIG)
 
 
 def init_database():
-    """Initialize database schema"""
     conn = get_db_connection()
     cursor = conn.cursor()
     
-    # Create telemetry table
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS telemetry_data (
             id SERIAL,
@@ -47,13 +40,11 @@ def init_database():
         );
     """)
     
-    # Create hypertable for time-series optimization
     cursor.execute("""
         SELECT create_hypertable('telemetry_data', 'time',  
             if_not_exists => TRUE);
     """)
     
-    # Create indexes
     cursor.execute("""
         CREATE INDEX IF NOT EXISTS idx_entity_id 
         ON telemetry_data (entity_id, time DESC);
@@ -67,14 +58,11 @@ def init_database():
     conn.commit()
     cursor.close()
     conn.close()
-    print("✓ Database initialized successfully")
+    print("Database initialized")
 
 
 @app.route('/v2/notify', methods=['POST'])
 def notify():
-    """
-    Receive notifications from Context Broker
-    """
     try:
         notification = request.json
         data = notification.get('data', [])
@@ -87,11 +75,9 @@ def notify():
             entity_type = entity.get('type')
             timestamp = datetime.utcnow()
             
-            # Store each attribute
             for key, value in entity.items():
                 if key not in ['id', 'type']:
                     if isinstance(value, dict) and 'type' in value:
-                        # It's an NGSI attribute
                         cursor.execute("""
                             INSERT INTO telemetry_data 
                             (time, entity_id, entity_type, attribute_name, attribute_value, metadata)
@@ -118,7 +104,6 @@ def notify():
 
 @app.route('/health', methods=['GET'])
 def health():
-    """Health check endpoint"""
     try:
         conn = get_db_connection()
         conn.close()
@@ -129,7 +114,6 @@ def health():
 
 @app.route('/v2/entities/<entity_id>', methods=['GET'])
 def get_entity_history(entity_id):
-    """Get historical data for an entity"""
     try:
         limit = request.args.get('lastN', 100, type=int)
         
@@ -173,8 +157,8 @@ def get_entity_history(entity_id):
 
 
 if __name__ == '__main__':
-    print("=== Initializing Telemetry Store ===\n")
+    print("Initializing Telemetry Store\n")
     init_database()
-    print("\n=== Starting Telemetry Store Service ===")
+    print("\nStarting Telemetry Store Service")
     print("Listening on http://0.0.0.0:8668")
     app.run(host='0.0.0.0', port=8668, debug=True)

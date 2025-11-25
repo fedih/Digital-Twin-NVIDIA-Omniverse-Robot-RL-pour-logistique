@@ -205,7 +205,6 @@
         </div>
 
         <div class="grid">
-            <!-- Robot Status Card -->
             <div class="card">
                 <h2>🤖 Robot Status</h2>
                 <div class="metric">
@@ -225,7 +224,6 @@
                 <div class="timestamp" id="robotTimestamp">Last updated: -</div>
             </div>
 
-            <!-- Position Card -->
             <div class="card">
                 <h2>📍 Position & Velocity</h2>
                 <div class="metric">
@@ -246,7 +244,6 @@
                 </div>
             </div>
 
-            <!-- Sensors Card -->
             <div class="card">
                 <h2>📡 Sensor Data</h2>
                 <div class="sensor-grid">
@@ -269,7 +266,6 @@
                 </div>
             </div>
 
-            <!-- Episode Card -->
             <div class="card">
                 <h2>🎯 Training Episode</h2>
                 <div class="metric">
@@ -290,7 +286,6 @@
                 </div>
             </div>
 
-            <!-- Environment Card -->
             <div class="card">
                 <h2>🌍 Environment</h2>
                 <div class="metric">
@@ -307,7 +302,6 @@
                 </div>
             </div>
 
-            <!-- Telemetry History -->
             <div class="card chart-container">
                 <h2>📊 Battery History</h2>
                 <canvas id="telemetryChart"></canvas>
@@ -481,10 +475,8 @@
             await fetchTelemetryHistory();
         }
 
-        // Initial load
         refreshData();
 
-        // Auto-refresh every 5 seconds
         setInterval(refreshData, 5000);
     </script>
 </body>

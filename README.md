@@ -224,15 +224,6 @@ curl -X POST http://localhost:1026/ngsi-ld/v1/entities/ `
 curl -X GET http://localhost:1026/ngsi-ld/v1/entities/
 ```
 
-## Next Steps
-
-- [ ] Integrate Nvidia Omniverse (Isaac Sim) to publish real robot states
-- [ ] Implement Reinforcement Learning Policy component
-- [ ] Debug subscription notifications (direct API calls work)
-- [ ] Add authentication and security
-- [ ] Implement data retention policies
-- [ ] Add more visualization charts to dashboard
-
 ## Testing
 
 All components have been tested and verified:

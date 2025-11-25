@@ -106,8 +106,6 @@ robots = client.list_entities(entity_type="Robot")
 
 ## Integration Points
 
-- **Isaac Sim** (Future): Will publish state updates (position, velocity, sensors) to the Context Broker
-- **RL Policy** (Future): Will read current state and publish actions back to Context Broker
 - **Telemetry Store**: Subscribes to entity changes for historical storage
 - **Monitoring Dashboard**: Displays real-time entity states via Context Broker API
 
@@ -166,16 +164,4 @@ curl -X PATCH http://localhost:1026/ngsi-ld/v1/entities/urn:ngsi-ld:Robot:001/at
   }'
 ```
 
-## Next Steps
-
-1. ✅ **Context Broker Setup** - Complete
-2. ✅ **Entity Models** - Complete
-3. ✅ **Python Client** - Complete
-4. ⏳ **Isaac Sim Integration** - Pending
-   - Connect Omniverse to Context Broker
-   - Publish robot state updates from simulation
-   - Subscribe to action commands
-5. ⏳ **RL Policy Integration** - Pending
-   - Read states from Context Broker
-   - Compute actions using trained model
-   - Publish actions back to simulation
+- Publish actions back to simulation

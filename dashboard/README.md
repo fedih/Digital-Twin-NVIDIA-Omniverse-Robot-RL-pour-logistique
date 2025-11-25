@@ -195,13 +195,3 @@ The dashboard makes REST API calls every 5 seconds to:
 
 - If opening `index.html` directly (`file://`), use HTTP server instead
 - Run: `python -m http.server 8080` in dashboard folder
-
-## Future Enhancements
-
-- [ ] Add velocity magnitude chart
-- [ ] Display sensor data as time-series graphs
-- [ ] Add episode rewards chart
-- [ ] Implement WebSocket for real-time updates (instead of polling)
-- [ ] Add entity selection dropdown
-- [ ] Export data to CSV
-- [ ] Add alerts for low battery or errors

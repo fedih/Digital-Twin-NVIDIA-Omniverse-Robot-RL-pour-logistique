@@ -1,7 +1,6 @@
 version: "3.8"
 
 services:
-  # MongoDB database for Orion Context Broker
   mongo-db:
     image: mongo:4.4
     container_name: fiware-mongo
@@ -21,7 +20,6 @@ services:
       timeout: 5s
       retries: 5
 
-  # Orion Context Broker (NGSI-LD)
   orion:
     image: fiware/orion-ld:1.5.1
     container_name: fiware-orion
@@ -42,7 +40,6 @@ services:
       retries: 3
       start_period: 30s
 
-  # TimescaleDB for Telemetry Store
   timescaledb:
     image: timescale/timescaledb:latest-pg15
     container_name: telemetry-timescaledb
@@ -64,7 +61,6 @@ services:
       timeout: 5s
       retries: 5
 
-  # Custom Telemetry Service
   telemetry-service:
     build:
       context: ./telemetry_store
